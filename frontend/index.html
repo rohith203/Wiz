@@ -4,6 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta charset="utf-8">
 <meta http-equiv="x-ua-compatible" content="ie=edge">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <!-- Name of your awesome camera app -->
 <title>Camera App</title>
 <!-- Link to your main style sheet-->
@@ -58,11 +59,11 @@ body {font-family: Arial;}
 </div>
 
 <div id="upload" class="tabcontent">
-    <form action="http://localhost:3000/upload_img" method="post" enctype="multipart/form-data">
+    <!-- <form action="http://localhost:3000/upload_img" method="post" enctype="multipart/form-data"> -->
         Select image to upload:
         <input type="file" name="filename" id="fileToUpload">
-        <input type="submit" value="Upload Image" name="submit">
-    </form>
+        <input type="submit" class="upload_submitBtn" value="Upload Image" name="submit">
+    <!-- </form> -->
 </div>
 
 <div id="cam" class="tabcontent">
@@ -80,6 +81,16 @@ body {font-family: Arial;}
     </main>
 </div>
 
+<div class="resultdiv">
+  <h3>Results</h3>
+  <table class="resultstable">
+    <!-- <tr>
+      <th>Class</th>
+      <th>Probability</th>
+    </tr> -->
+  </table>
+</div>
+
 <!-- <div id="Tokyo" class="tabcontent">
   <h3>Tokyo</h3>
   <p>Tokyo is the capital of Japan.</p>
@@ -87,6 +98,9 @@ body {font-family: Arial;}
 
 <script>
 function openTab(evt, tabName) {
+  if(tabName==='cam'){
+    cameraStart();
+  }
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName("tabcontent");
   for (i = 0; i < tabcontent.length; i++) {

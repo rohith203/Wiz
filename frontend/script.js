@@ -47,11 +47,11 @@ cameraTrigger.onclick = function() {
     cameraSensor.width = cameraView.videoWidth;
     cameraSensor.height = cameraView.videoHeight;
     cameraSensor.getContext("2d").drawImage(cameraView, 0, 0);
-    cameraOutput.src = cameraSensor.toDataURL("image/jpg");
+    cameraOutput.src = cameraSensor.toDataURL("image/jpeg");
     cameraOutput.classList.add("taken");
 };
 // Start the video stream when the window loads
-window.addEventListener("load", cameraStart, false);
+// window.addEventListener("load", cameraStart, false);
 
 submitBtn = document.querySelector("#upload_btn");
 
@@ -65,7 +65,7 @@ submitBtn.onclick = () => {
     data.append('image', blob, 'myimg.jpg');
 
     console.log("uploaded" + data);
-    fetch("http://localhost:3000/upload_img", {
+    fetch("http://localhost:3000/camupload_img", {
         method:"POST",
         body:data
       })
@@ -74,29 +74,56 @@ submitBtn.onclick = () => {
 }
 
 
+document.querySelector(".upload_submitBtn").onclick = () => {
+    console.log("submit clicked")
+    
+    let f = document.querySelector("#fileToUpload").files[0]
+    // f.filename = f.name
+    console.log(f)
+    data = new FormData();
+    data.append('image', f, f.name)
 
-var rad = document.getElementsByName('select_tab');
-var prev = null;
-for (var i = 0; i < rad.length; i++) {
-    rad[i].addEventListener('change', function() {
-        (prev) ? console.log(prev.value): null;
-        if (this !== prev) {
-            prev = this;
-        }
-        console.log(this.value);
-        if(this.value==="cam"){
-            document.querySelector('.tab.upload').display="none";
-            document.querySelector('.tab.cam').display="block";
-            // console.log("cam" + document.querySelector('.tab.cam').display);
-            // console.log("upload" + document.querySelector('.tab.upload').display);
-            console.log("changed"+this.value)
-        }
-        if(this.value==="upload"){
-            document.querySelector('.tab.cam').visibility="hidden";
-            document.querySelector('.tab.upload').visibility="block";
-            // console.log("cam" + document.querySelector('.tab.cam').display);
-            // console.log("upload" + document.querySelector('.tab.upload').display);
-            console.log("changed"+this.value)
-        }
-    });
+    fetch("http://localhost:3000/upload_img", {
+        method:"POST",
+        body:data
+      })
+      .then(res=>res.json())
+      .then(data => {
+          arr = JSON.parse(data['output']);
+          let tabl = document.querySelector(".resultstable");
+          
+          var child = tabl.lastElementChild;  
+          while (child) { 
+              tabl.removeChild(child); 
+              child = tabl.lastElementChild;
+          } 
+          let tr_ = document.createElement("tr");
+          let th_1 = document.createElement("th")
+          th_1.innerHTML = "Class";
+          let th_2 = document.createElement("th")
+          th_2.innerHTML = "Probability";
+          tr_.appendChild(th_1);
+          tr_.appendChild(th_2);
+          tabl.appendChild(tr_);
+
+          Object.keys(arr).map((k,i)=>{
+              let tr_ = document.createElement("tr");
+              let td_name = document.createElement("td");
+              let td_bar = document.createElement("td");
+              td_name.innerHTML = k; 
+              
+              let td_div = document.createElement("div");
+            //   td_bar.innerHTML = arr[k];
+              td_div.innerHTML = arr[k];
+              $(td_div).css({"width":arr[k]*100});
+              
+              td_bar.appendChild(td_div);
+              tr_.appendChild(td_name)
+              tr_.appendChild(td_bar)
+              tabl.appendChild(tr_);
+              console.log(k + "  " + arr[k]);
+          })
+          $('td div').css({"background-color":"#bbb", "height":"100%"})
+            
+      })
 }

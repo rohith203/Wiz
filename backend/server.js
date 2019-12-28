@@ -16,18 +16,31 @@ app.get('/', (req, res) => {
 var upload = multer({ dest: __dirname + '/public/uploads/' });
 var type = upload.single('image');
 
-
-app.post('/upload_img',type, (req, res) => {
-    console.log(req.file)
+let wiz = function(rfile, res){
     var spawn = require('child_process').spawn;
-    console.log(__dirname+'\\public/uploads/' + req.file.filename);
+    console.log(__dirname+'\\public/uploads/' + rfile.filename);
     
-    var process = spawn('python', ['test.py', req.file.destination + req.file.filename]);
+    var process = spawn('python', ['test.py', rfile.destination + rfile.filename]);
     
     process.stdout.on('data', function(data) { 
         console.log("yes", data.toString());
         res.json({'output':data.toString()});
     })
+}
+
+
+app.post('/camupload_img',type, (req, res) => {
+    console.log(req.file);
+    wiz(req.file, res);
+});
+
+app.post('/upload_img',type, (req, res) => {
+    console.log(req.file);
+
+    // test_obj = {"liner": "0.47463232", "paddlewheel": "0.0805761", "palace": "0.075020775", "dock": "0.046901654", "dome": "0.043579284"}
+    // res.json({"output":JSON.stringify(test_obj)})
+
+    wiz(req.file, res);
 });
 
 const port = 3000;
