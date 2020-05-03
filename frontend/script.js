@@ -55,6 +55,48 @@ cameraTrigger.onclick = function() {
 
 submitBtn = document.querySelector("#upload_btn");
 
+
+let displayResults = (data)=>{
+    console.log(data)
+    arr = data
+  //   arr = JSON.parse(data);
+    let tabl = document.querySelector(".resultstable");
+    
+    var child = tabl.lastElementChild;  
+    while (child) { 
+        tabl.removeChild(child); 
+        child = tabl.lastElementChild;
+    } 
+    let tr_ = document.createElement("tr");
+    let th_1 = document.createElement("th")
+    th_1.innerHTML = "Class";
+    let th_2 = document.createElement("th")
+    th_2.innerHTML = "Probability";
+    tr_.appendChild(th_1);
+    tr_.appendChild(th_2);
+    tabl.appendChild(tr_);
+
+    Object.keys(arr).map((k,i)=>{
+        let tr_ = document.createElement("tr");
+        let td_name = document.createElement("td");
+        let td_bar = document.createElement("td");
+        td_name.innerHTML = k; 
+        
+        let td_div = document.createElement("div");
+      //   td_bar.innerHTML = arr[k];
+        td_div.innerHTML = arr[k];
+        $(td_div).css({"width":arr[k]*100});
+        
+        td_bar.appendChild(td_div);
+        tr_.appendChild(td_name)
+        tr_.appendChild(td_bar)
+        tabl.appendChild(tr_);
+        console.log(k + "  " + arr[k]);
+    })
+    $('td div').css({"background-color":"#bbb", "height":"100%"})
+}
+
+
 submitBtn.onclick = () => {
     
     data = new FormData();
@@ -65,12 +107,12 @@ submitBtn.onclick = () => {
     data.append('image', blob, 'myimg.jpg');
 
     console.log("uploaded" + data);
-    fetch("http://localhost:3000/camupload_img", {
+    fetch("http://localhost:5000/camupload_img", {
         method:"POST",
         body:data
       })
       .then(res=>res.json())
-      .then(data => console.log(data))
+      .then(displayResults)
 }
 
 
@@ -83,47 +125,10 @@ document.querySelector(".upload_submitBtn").onclick = () => {
     data = new FormData();
     data.append('image', f, f.name)
 
-    fetch("http://localhost:3000/upload_img", {
+    fetch("http://localhost:5000/upload_img", {
         method:"POST",
         body:data
       })
       .then(res=>res.json())
-      .then(data => {
-          arr = JSON.parse(data['output']);
-          let tabl = document.querySelector(".resultstable");
-          
-          var child = tabl.lastElementChild;  
-          while (child) { 
-              tabl.removeChild(child); 
-              child = tabl.lastElementChild;
-          } 
-          let tr_ = document.createElement("tr");
-          let th_1 = document.createElement("th")
-          th_1.innerHTML = "Class";
-          let th_2 = document.createElement("th")
-          th_2.innerHTML = "Probability";
-          tr_.appendChild(th_1);
-          tr_.appendChild(th_2);
-          tabl.appendChild(tr_);
-
-          Object.keys(arr).map((k,i)=>{
-              let tr_ = document.createElement("tr");
-              let td_name = document.createElement("td");
-              let td_bar = document.createElement("td");
-              td_name.innerHTML = k; 
-              
-              let td_div = document.createElement("div");
-            //   td_bar.innerHTML = arr[k];
-              td_div.innerHTML = arr[k];
-              $(td_div).css({"width":arr[k]*100});
-              
-              td_bar.appendChild(td_div);
-              tr_.appendChild(td_name)
-              tr_.appendChild(td_bar)
-              tabl.appendChild(tr_);
-              console.log(k + "  " + arr[k]);
-          })
-          $('td div').css({"background-color":"#bbb", "height":"100%"})
-            
-      })
+      .then(displayResults)
 }
